@@ -47,7 +47,7 @@ def add_to_inventory(inventory, items):
 
     return updated_inv_dict
 
-loot = ['gold coin', 'dagger', 'gold coin', 'gold coin', 'ruby']
+loot = ['holy bible']
 
 
 inv = add_to_inventory(inv, loot)
