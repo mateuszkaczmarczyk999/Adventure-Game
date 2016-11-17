@@ -2,6 +2,7 @@ import os
 import copy
 import sys
 import random
+import time
 import tty
 import invent                       ##### MK import inventory_game
 from invent import inv              ##### MK import inventory_game
@@ -49,47 +50,80 @@ def display_board(lista):
 
 
 def move_on_board(lista):
+    start_time = time.time()
+    actual_time = 0
     y = 15
     x = 2
     lista[y][x] = "@"
-    while True:
+    inv["thanksgiving egg"] = 0
+
+
+    while actual_time < 90 and inv["thanksgiving egg"] < 20:
         os.system('clear')
+        real_time = time.time()
+        actual_time = real_time - start_time
         display_board(lista)
+        #print(start_time)
         invent.print_table(inv, "count,desc")   ### MK print tabelki
         key = getch()
         if key == "x":
             exit()
-        if key == "d" and lista[y][x+1] not in ["I", "X", "+"]:
-            lista[y][x] = ' '
-            x += 1
-            lista[y][x] = "@"
+        if key == "d" and lista[y][x+1] not in ["I", "X", "▤", "+"]:
+            if lista[y][x+1] not in ["Q", "💀", "♣", "●", "♥", "Ψ"]:
+                lista[y][x] = ' '
+                x += 1
+                lista[y][x] = "@"
+            elif lista[y][x+1] in ["Q", "💀", "♣", "●", "♥", "Ψ"]:
+                add_to_inventory(lista, y, x +1)
+                lista[y][x] = ' '
+                x += 1
+                lista[y][x] = "@"
             continue
-        elif key == "a" and lista[y][x-1] not in ["I", "X", "+"]:
-            lista[y][x] = ' '
-            x -= 1
-            lista[y][x] = "@"
-            continue
-        elif key == "w" and lista[y-1][x] not in ["I", "X", "+"]:
-            if lista[y-1][x] in ["="]:
-                print("AAAAAAAAA")
-                for row in range(1, len(lista)-1):
-                    for column in range(1, len(lista)-1):
-                        lista = gameboard()
 
+        elif key == "a" and lista[y][x-1] not in ["I", "X", "▤", "+"]:
+            if lista[y][x-1] not in ["Q", "💀", "♣", "●", "♥", "Ψ"]:
+                lista[y][x] = ' '
+                x -= 1
+                lista[y][x] = "@"
+            elif lista[y][x-1] in ["Q", "💀", "♣", "●", "♥", "Ψ"]:
+                add_to_inventory(lista, y, x -1)
+                lista[y][x] = ' '
+                x -= 1
+                lista[y][x] = "@"
+            continue
 
-            lista[y][x] = ' '
-            y -= 1
-            lista[y][x] = "@"
+        elif key == "w" and lista[y-1][x] not in ["I", "X", "▤", "+"]:
+            if lista[y-1][x] not in ["Q", "💀", "♣", "●", "♥", "Ψ"]:
+                lista[y][x] = ' '
+                y -= 1
+                lista[y][x] = "@"
+            elif lista[y-1][x] in ["Q", "💀", "♣", "●", "♥", "Ψ"]:
+                add_to_inventory(lista, y-1, x)
+                lista[y][x] = ' '
+                y -= 1
+                lista[y][x] = "@"
             continue
-        elif key == "s" and lista[y+1][x] not in ["I", "X", "+"]:
-            lista[y][x] = ' '
-            y += 1
-            lista[y][x] = "@"
+
+        elif key == "s" and lista[y+1][x] not in ["I", "X", "▤", "+"]:
+            if lista[y+1][x] not in ["Q", "💀", "♣", "●", "♥", "Ψ"]:
+                lista[y][x] = ' '
+                y += 1
+                lista[y][x] = "@"
+            elif lista[y+1][x] in ["Q", "💀", "♣", "●", "♥", "Ψ"]:
+                add_to_inventory(lista, y+1, x)
+                lista[y][x] = ' '
+                y += 1
+                lista[y][x] = "@"
             continue
+    if actual_time >= 90:
+        print("\33[91mNO TIME TO LOOSE. IT'S TIME TO DIE\33[0m")
+    elif inv["thanksgiving egg"] == 20:
+        print("\33[92mIT'S YOUR LUCKY DAY\33[0m")
+
 
 def random_building(lista, a, b, c=1):
-    ran1 = random.randint(2, 13)
-    ran2 = random.randint(10, 16)
+    ran1 = random.randint(3, 15)
+    ran2 = random.randint(7, 12)
 
     for row in range(ran1, ran1 + ran2):
         for column in range(a, b):
@@ -101,9 +135,11 @@ def random_building(lista, a, b, c=1):
 
 def random_fence(lista, lista2):
     for idx, val in enumerate(lista2):
-        rand1 = random.randint(6, 15)
-        rand2 = random.randint(16, 25)
-        for row in list(range(1, rand1)) + list(range(rand2,30)):
+        rand1 = random.randint(4, 6)
+        rand2 = random.randint(23, 25)
+        zakres_1 = list(range(1, rand1))
+        zakres_2 = list(range(rand2,30))
+        for row in zakres_1 + zakres_2:
             #fence = dark_green + "+" + end_color
             lista[row][val] = "+"
 
@@ -115,96 +151,81 @@ def level_board(lista, level=1):
     random_fence(lista, border_list)
     return lista
 
-    """
-    #ran_list = []
-    #i = 0
-    #while i != level:
-        r = random.randint(2, (len(lista)-2))
-        ran_list.append(r)
-        i = len(set(ran_list))
-        ran_list = list(set(ran_list))
-    ran_list.extend([1, (len(lista)-2)])
-    ran_list = sorted(ran_list)
-
-    for row in range(1, (len(lista)-1)):
-        for column in range(1, (len(lista)-1)):
-            lista[row][column] = "I"
-
-    #for row in range(1, (len(lista)-1)):
-        #for column in ran_list:
-            #lista[row][column] = " "
-
-    combs = []
-    for idx, val in enumerate(ran_list):
-        if idx < (len(ran_list)-1):
-            combs.append((ran_list[idx], ran_list[idx + 1]))
-    print(combs)
-    print(combs[0])
-    print(combs[0][0], combs[0][1])
-
-    for i, v in enumerate(combs):
-        random_place(lista, combs[i][0], combs[i][1])
-"""
 
 
-"""
-    for row in range(random.randrange(2, 10), random.randrange(17, 25)):
-        for column in range(1, 5):
-            lista[row][column] = " "
-    r = random.randrange(2, 10)
-    for row in range(r, random.randrange(17, 25)):
-        for column in range(5, 9):
-            lista[row][column] = " "
-            lista[r-1][7] = "."
-    for row in range(random.randrange(2, 10), random.randrange(17, 25)):
-        for column in range(9, 13):
-            lista[row][column] = " "
-    for row in range(random.randrange(2, 10), random.randrange(17, 25)):
-        for column in range(13, 17):
-            lista[row][column] = " "
-    for row in range(random.randrange(2, 10), random.randrange(17, 25)):
-        for column in range(17, 21):
-            lista[row][column] = " "
-    for row in range(random.randrange(2, 10), random.randrange(17, 25)):
-        for column in range(21, 25):
-            lista[row][column] = " "
-    for row in range(random.randrange(2, 10), random.randrange(17, 25)):
-        for column in range(25, 29):
-            lista[row][column] = " "
-    return lista
-"""
+def add_to_inventory(lista, y, x):
 
-"""
-def house_board(lista, level=1):
-    for row in enumerate(lista):
-        #random.choice(lista) = "I"
-        for column in range(5, 10):
-            lista[row][column] = "H"
-    return lista
-"""
+    if lista[y][x] == "Q":
+        if "golden egg" not in inv.keys():
+            inv["golden egg"] = 1
+        else:
+            inv["golden egg"] += 1
 
+    elif lista[y][x] == "💀":
+        if "cure" in inv.keys() and inv["cure"] == 1:
+            del inv["cure"]
+            if "thanksgiving egg" not in inv.keys():
+                inv["thanksgiving egg"] = 1
+            else:
+                inv["thanksgiving egg"] += 1
+        elif "cure" in inv.keys() and inv["cure"] > 1:
+            inv["cure"] -= 1
+            if "thanksgiving egg" not in inv.keys():
+                inv["thanksgiving egg"] = 1
+            else:
+                inv["thanksgiving egg"] += 1
+        else:
+            print('\33[91mNO CURE NO CHANCES. BYE BYE (YOU DIE)\33[0m')
+            exit()
 
-def items(lista):                           ### MK funkcja generowania przedmiotów
+    elif lista[y][x] == "♣":
+        if "magic weed" not in inv.keys():
+            inv["magic weed"] = 1
+        else:
+            inv["magic weed"] += 1
+
+    elif lista[y][x] == "●":
+        if "cure" not in inv.keys():
+            inv["cure"] = 1
+        else:
+            del inv["cure"]
+
+    elif lista[y][x] == "♥":
+        live_or_die_number = random.randint(1,6)
+        if live_or_die_number == 1:
+            print("\33[91mIT WASN'T THE GREATEST IDEA TO EAT IT ALL. YOU DIE\33[0m")
+            exit()
+        elif "super cure" not in inv.keys():
+            inv["cure"] = 15
+
+    elif lista[y][x] == "Ψ":
+        print('\33[91mNICE AND SHARP (YOU DIE)\33[0m')
+        exit()
+
+def items(lista):
     difficulty = 10
     level_difficulty = difficulty
     items_place = []
-    #lista[20][20] = 'G'
-    gold_egg = int(difficulty * 0.1) * ["Q"]
-    feather = int(difficulty * 0.5) * ["f"]
-    egg = int(difficulty * 0.7) * ["o"]
-    pitchfork = int(difficulty * 0.1) * ["Y"]
-    magic_weed = int(difficulty * 2) * ["w"]
-    all_items = gold_egg + feather + egg + pitchfork + magic_weed
-    counter = len(all_items)
-    while counter > 0:
-        for item in range(len(all_items)):
-            x = random.randint(1,20)
-            y = random.randint(1,20)
-            if lista[y][x] not in ["X", "I"]:
-                lista[y][x] = all_items[item]
-                counter -= 1
+
+    golden_egg = int(difficulty * 0.1) * ["Q"]
+    zombie_chicken = int(difficulty * 2) * ["💀"]
+    magic_weed = int(difficulty * 2) * ["♣"]
+    cure = int(difficulty * 2.2) * ["●"]
+    super_cure = 1 * ["♥"]
+    pitchfork= int(difficulty * 2) * ["Ψ"]
+
+    all_items = golden_egg + zombie_chicken + magic_weed + cure + super_cure + pitchfork
+
+    while len(all_items) > 0:
+        for item in all_items:
+            x = random.randint(1,28)
+            y = random.randint(1,28)
+            if lista[y][x] not in ["X", "I", "▤", "+"] and lista[y][x] == ' ':
+                lista[y][x] = item
+                all_items.remove(item)
             else:
                 continue
+
     return lista
 
 
@@ -212,6 +233,6 @@ def items(lista):                           ### MK funkcja generowania przedmiot
 
 
 #display_board(gameboard(10, 25))
-level = level_board(gameboard(), 10)
+level = items(level_board(gameboard(), 10))
 
 move_on_board(level)
