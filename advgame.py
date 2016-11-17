@@ -7,7 +7,6 @@ import tty
 import invent                       ##### MK import inventory_game
 from invent import inv              ##### MK import inventory_game
 
-
 #lista naszych kolorów
 dark_green = '\33[32m'
 bright_green = '\33[92m'
@@ -57,6 +56,7 @@ def move_on_board(lista):
     lista[y][x] = "@"
     inv["thanksgiving egg"] = 0
 
+    #actual_time < 90 and inv["thanksgiving egg"] < 20
 
     while actual_time < 90 and inv["thanksgiving egg"] < 20:
         os.system('clear')
@@ -105,7 +105,7 @@ def move_on_board(lista):
             continue
 
         elif key == "s" and lista[y+1][x] not in ["I", "X", "▤", "+"]:
-            if lista[y+1][x] not in ["Q", "💀", "♣", "●", "♥", "Ψ"]:
+            if lista[y+1][x] not in ["Q", "💀", "♣", "●", "♥", "Ψ", "▦"]:
                 lista[y][x] = ' '
                 y += 1
                 lista[y][x] = "@"
@@ -114,6 +114,8 @@ def move_on_board(lista):
                 lista[y][x] = ' '
                 y += 1
                 lista[y][x] = "@"
+            elif lista[y+1][x] in ["▦"]:
+                house_board(lista)
             continue
     if actual_time >= 90:
         print("\33[91mNO TIME TO LOOSE. IT'S TIME TO DIE\33[0m")
@@ -128,7 +130,7 @@ def random_building(lista, a, b, c=1):
     for row in range(ran1, ran1 + ran2):
         for column in range(a, b):
             #roof = bright_groundish + "=" + end_color
-            lista[row][column] = "▤"
+            lista[row][column] = "▦"
         for column in range(a, b, c):
             #roof2 = bright_groundish + "I" + end_color
             lista[row][column] = "▤"
@@ -150,6 +152,77 @@ def level_board(lista, level=1):
     border_list = [3, 11, 19, 27]
     random_fence(lista, border_list)
     return lista
+
+def house_board(lista):
+    lista_copied = copy.deepcopy(lista)
+    for row in range(1, len(lista_copied)-1):
+        for column in range(1, len(lista_copied)-1):
+            lista_copied[row][column] = " "
+    for i in range(5):
+        ran1 = random.randint(1, len(lista_copied)-11)
+        ran2 = random.randint(3,10)
+        zakres_1 = list(range(ran1, ran1+ran2))
+        ran3 = random.randint(1, len(lista_copied)-11)
+        ran4 = random.randint(3,10)
+        zakres_2 = list(range(ran3, ran3+ran4))
+        blood = red + "☃" + end_color
+        for row in zakres_2:
+            for column in zakres_1:
+                lista_copied[row][column] = blood
+    for row in list(range(1, 8)) + list(range(len(lista_copied)-8, len(lista_copied)-1)):
+        for column in range(1, len(lista_copied)-1):
+            lista_copied[row][column] = "X"
+    y = 15
+    x = 2
+    lista_copied[y][x] = "@"
+    var = True
+    while var:
+        os.system('clear')
+        display_board(lista_copied)
+        key = getch()
+        if key == "x":
+            exit()
+
+        should_exit = True
+        for row in range(30):
+            for column in range(30):
+                if lista_copied[row][column] == blood:
+                    should_exit = False
+        if should_exit:
+            var = False
+
+        if key == "d" and lista_copied[y][x+1] not in ["X", "▤"]:
+            lista_copied[y][x] = ' '
+            x += 1
+            lista_copied[y][x] = "@"
+            continue
+        elif key == "a" and lista_copied[y][x-1] not in ["X", "▤"]:
+            lista_copied[y][x] = ' '
+            x -= 1
+            lista_copied[y][x] = "@"
+            continue
+        elif key == "w" and lista_copied[y-1][x] not in ["X", "▤"]:
+            lista_copied[y][x] = ' '
+            y -= 1
+            lista_copied[y][x] = "@"
+            continue
+        elif key == "s" and lista_copied[y+1][x] not in ["X", "▤"]:
+            lista_copied[y][x] = ' '
+            y += 1
+            lista_copied[y][x] = "@"
+            continue
+
+
+
+        #if blood not in lista_copied:
+            #return False
+
+    #move_on_board(lista)
+
+
+
+
+
 
 
 
@@ -227,7 +300,6 @@ def items(lista):
                 continue
 
     return lista
-
 
 
 
