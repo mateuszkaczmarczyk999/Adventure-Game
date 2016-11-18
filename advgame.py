@@ -4,12 +4,11 @@ import sys
 import random
 import time
 import tty
-import invent                       ##### MK import inventory_game
-from invent import inv              ##### MK import inventory_game
+import invent
+from invent import inv
 from termcolor import cprint, colored
 
 
-#lista naszych kolorów
 dark_green = '\33[32m'
 bright_green = '\33[92m'
 dark_groundish = '\33[36m'
@@ -37,6 +36,7 @@ weed_counter = 0
 
 
 def game_intro():
+    """INTRO WITH SPECIAL EFFECTS"""
     f = open("effect.txt", 'r')
     colorlist = ("red", "yellow", "white", "red")
     effect_list = [line[:-1] for line in f]
@@ -51,6 +51,7 @@ def game_intro():
 
 
 def game_rules():
+    """START SCREEN. RULES, HELP GAME"""
     cprint('Welcome to the Grand Game ZOMBIE CHICKEN FARM!', 'red', attrs=['bold'], file=sys.stderr)
     time.sleep(2)
     print('old macdonald had a farm....')
@@ -68,7 +69,9 @@ def game_rules():
     os.system('clear')
     print('\n\n... but after a nuclear holocaust chickens on your farm turned into bloodthirsty zombies...')
     print('now you need to heal your chickens! remember! everywhere rises radioactive mist.')
-    cprint('if you dont want to die too quickly hide in abandoned barns & clear infected blood. then you gain more time.', 'red')
+    cprint('''if you dont want to die too quickly
+     hide in abandoned barns & clear infected blood.
+     then you gain more time.''', 'red')
     time.sleep(2)
     cprint('\n\nINSTRUCTION: ', 'red', attrs=['bold'], file=sys.stderr)
     print('\nzombie chicken ', zombie, "\t you can cure the zombie using the cure")
@@ -82,6 +85,7 @@ def game_rules():
 
 
 def credits():
+    """PRINT CREDITS"""
     print('''
                                                  _______________________
        _______________________-------------------                       `\
@@ -107,12 +111,11 @@ def credits():
         ''')
 
 
-def game_help():
-    print("\nCONTROL:\nA - move left\nS - move down\nD - move right\nW - move up\n")
-
-
 def getch():
-    import sys, tty, termios
+    """BLACK MAGIC, DO NOT TOUCH. FOR IMPUT WITHOUT ENTER"""
+    import sys
+    import tty
+    import termios
     fd = sys.stdin.fileno()
     old_settings = termios.tcgetattr(fd)
     try:
@@ -124,6 +127,7 @@ def getch():
 
 
 def gameboard(x=31, y=31):
+    """ MAKE PURE GAMEBOARD WITHOUT OBSTACLES"""
     lista = []
     for row in range(x):
         lista.append([])
@@ -136,11 +140,13 @@ def gameboard(x=31, y=31):
 
 
 def display_board(lista):
+    """PRINT LIST FROM GAMEBOARD DEF"""
     for i in lista:
         print('  '.join(i))
 
 
 def random_building(lista, a, b, c=1):
+    """BUILDINGS: RANDOM GENERATOR"""
     ran1 = random.randint(3, 15)
     ran2 = random.randint(7, 12)
 
@@ -152,16 +158,18 @@ def random_building(lista, a, b, c=1):
 
 
 def random_fence(lista, lista2):
+    """OBSTACLES: RANDOM GENERATOR"""
     for idx, val in enumerate(lista2):
         rand1 = random.randint(4, 6)
         rand2 = random.randint(23, 25)
         zakres_1 = list(range(1, rand1))
-        zakres_2 = list(range(rand2,30))
+        zakres_2 = list(range(rand2, 30))
         for row in zakres_1 + zakres_2:
             lista[row][val] = "+"
 
 
 def level_board(lista, level=1):
+    """DIFFCULTY OF LEVELS. RANDOM OBSTACLES"""
     random_building(lista, 5, 10, 2)
     random_building(lista, 13, 18, 2)
     random_building(lista, 21, 26, 2)
@@ -171,16 +179,17 @@ def level_board(lista, level=1):
 
 
 def house_board(lista):
+    """MINI GAME AT BARN - CLEANING BLOOD. USER MUST CLEAN RED OBJECTS AT BOARD"""
     lista_copied = copy.deepcopy(lista)
     for row in range(1, len(lista_copied)-1):
         for column in range(1, len(lista_copied)-1):
             lista_copied[row][column] = " "
     for i in range(2):
         ran1 = random.randint(1, len(lista_copied)-11)
-        ran2 = random.randint(3,10)
+        ran2 = random.randint(3, 10)
         zakres_1 = list(range(ran1, ran1+ran2))
         ran3 = random.randint(1, len(lista_copied)-11)
-        ran4 = random.randint(3,10)
+        ran4 = random.randint(3, 10)
         zakres_2 = list(range(ran3, ran3+ran4))
         blood = red + "☃" + end_color
         for row in zakres_2:
@@ -234,6 +243,7 @@ def house_board(lista):
 
 
 def add_to_inventory(lista, y, x):
+    """ADD ITEMS TO INVENTORY"""
     global inv
 
     if lista[y][x] == "Q":
@@ -257,7 +267,8 @@ def add_to_inventory(lista, y, x):
                 inv["thanksgiving egg"] += 1
         else:
             print('\33[91mNO CURE NO CHANCES. BYE BYE (YOU DIE)\33[0m')
-            exit()
+            time.sleep(3)
+            main()
 
     elif lista[y][x] == "♣":
         global weed_counter
@@ -275,22 +286,25 @@ def add_to_inventory(lista, y, x):
             del inv["cure"]
 
     elif lista[y][x] == "♥":
-        live_or_die_number = random.randint(1,6)
+        live_or_die_number = random.randint(1, 6)
         if live_or_die_number == 1:
             print("\33[91mIT WASN'T THE GREATEST IDEA TO EAT IT ALL. YOU DIE\33[0m")
-            exit()
+            time.sleep(3)
+            main()
         elif "super cure" not in inv.keys():
             inv["cure"] = 15
 
     elif lista[y][x] == "Ψ":
         print('\33[91mNICE AND SHARP (YOU DIE)\33[0m')
-        exit()
+        time.sleep(3)
+        main()
 
 
 def items(lista):
-    #global difficulty
-    #difficulty = 10
-    #level_difficulty = difficulty
+    """INVENTORY GENERATOR"""
+    # global difficulty
+    # difficulty = 10
+    # level_difficulty = difficulty
     items_place = []
 
     golden_egg = int(difficulty * 0.1) * ["Q"]
@@ -298,14 +312,14 @@ def items(lista):
     magic_weed = int(difficulty * 2) * ["♣"]
     cure = int(difficulty * 2.2) * ["●"]
     super_cure = 1 * ["♥"]
-    pitchfork= int(difficulty * 2) * ["Ψ"]
+    pitchfork = int(difficulty * 2) * ["Ψ"]
 
     all_items = golden_egg + zombie_chicken + magic_weed + cure + super_cure + pitchfork
 
     while len(all_items) > 0:
         for item in all_items:
-            x = random.randint(1,28)
-            y = random.randint(1,28)
+            x = random.randint(1, 28)
+            y = random.randint(1, 28)
             if lista[y][x] not in ["X", "I", "▤", "+"] and lista[y][x] == ' ':
                 lista[y][x] = item
                 all_items.remove(item)
@@ -316,28 +330,29 @@ def items(lista):
 
 
 def gameplay(lista):
+    """MAIN LOOP: MOVE, TIME, COUNTER"""
     global weed_counter
-    global max_time                         ###
-    global thanksgiving_egg_amount          ###
+    global max_time
+    global thanksgiving_egg_amount
 
-    max_time = 90                           ###
+    max_time = 90
     start_time = time.time()
     actual_time = 0
     y = 15
     x = 2
     lista[y][x] = "@"
-    inv["thanksgiving egg"] = 0             ###
+    inv["thanksgiving egg"] = 0
     global difficulty
 
-    #actual_time < 90 and inv["thanksgiving egg"] < 20
+    # actual_time < 90 and inv["thanksgiving egg"] < 20
 
     while actual_time < max_time and inv["thanksgiving egg"] < thanksgiving_egg_amount:
         os.system('clear')
         real_time = time.time()
         actual_time = real_time - start_time
         display_board(lista)
-        #print(start_time)
-        invent.print_table(inv, "count,desc")   ### MK print tabelki
+        # print(start_time)
+        invent.print_table(inv, "count,desc")   # MK print tabelki
         print("approx TIME to die: ", int(max_time-actual_time))
         key = getch()
         if weed_counter in [5, 15, 25]:
@@ -357,7 +372,7 @@ def gameplay(lista):
                 x += 1
                 lista[y][x] = "@"
             elif lista[y][x+1] in ["Q", "💀", "♣", "●", "♥", "Ψ"]:
-                add_to_inventory(lista, y, x +1)
+                add_to_inventory(lista, y, x + 1)
                 lista[y][x] = ' '
                 x += 1
                 lista[y][x] = "@"
@@ -369,14 +384,14 @@ def gameplay(lista):
                 x -= 1
                 lista[y][x] = "@"
             elif lista[y][x-1] in ["Q", "💀", "♣", "●", "♥", "Ψ"]:
-                add_to_inventory(lista, y, x -1)
+                add_to_inventory(lista, y, x - 1)
                 lista[y][x] = ' '
                 x -= 1
                 lista[y][x] = "@"
             continue
 
         elif key == "w" and lista[y-1][x] not in ["I", "X", "▤", "+"]:
-            if lista[y-1][x] not in ["Q", "💀", "♣", "●", "♥", "Ψ","▦"]:
+            if lista[y-1][x] not in ["Q", "💀", "♣", "●", "♥", "Ψ", "▦"]:
                 lista[y][x] = ' '
                 y -= 1
                 lista[y][x] = "@"
@@ -404,17 +419,20 @@ def gameplay(lista):
                 max_time += 120
                 house_board(lista)
             continue
-    if actual_time >= 90:
+    if actual_time >= max_time:
         print("\33[91mNO TIME TO LOOSE. IT'S TIME TO DIE\33[0m")
-    elif inv["thanksgiving egg"] == thanksgiving_egg_amount:
+        time.sleep(3)
+        main()
+    if inv["thanksgiving egg"] == thanksgiving_egg_amount:
         print("\33[92mIT'S YOUR LUCKY DAY. TIME TO NEW CHAPTER\33[0m")
         time.sleep(4)
         difficulty += 5
         items(lista)
-        move_on_board(level)
+        gameplay(lista)
 
 
 def win():
+    """ADD THANKSGIVING EGG TO INVENTORY. ITS A TROPHY."""
     global inv
     os.system('clear')
     print("YOU WON !!!")
@@ -427,6 +445,7 @@ def win():
 
 
 def rock_game():
+    """SIMPLE GAME ROCK, PAPER, SCISSORS"""
     global weed_counter
     player = False
     weed_counter += 1
@@ -481,6 +500,7 @@ def rock_game():
 
 
 def chick():
+    """PRINT EVIL CHICKEN FOR MINI GAME ROCK, PAPER, SCISSORS"""
     cprint('''
                               .'`  `.      __
                              /      |  ,-'`  `'.
@@ -509,6 +529,7 @@ def chick():
 
 
 def mini_intro():
+    """INTRO FOR MINI GAME FARM HANGMAN"""
     global life
     global weed_counter
     cprint("Welcome IN FARM HANGMAN!! \n", 'yellow')
@@ -523,12 +544,12 @@ def mini_intro():
     weed_counter += 1
 
 
-def load_capital():                                                             #make a list from txt file, random capital --> len
+def load_capital():
     """LOADING TXT FILES WITH LIST OF COUNTRIES AND CAPITALS"""
-    capitals_file=open('farm.txt', 'r')
-    capitals_array=capitals_file.readlines()
+    capitals_file = open('farm.txt', 'r')
+    capitals_array = capitals_file.readlines()
     capitals_file.close()
-    return capitals_array[random.randrange(0,len(capitals_array)-1)]
+    return capitals_array[random.randrange(0, len(capitals_array)-1)]
 
 
 def game_start():
@@ -536,50 +557,44 @@ def game_start():
     country_capital = load_capital()
     capitaldash = []
 
-
     for x in range(len(country_capital)):
-
-        if country_capital[x] == "|":                                           #difference between country and  city |
-            country = country_capital[:x-1]                                     #hint
-            capital = country_capital[x+2:len(country_capital)-1]               #capital change letters to dashes
+        if country_capital[x] == "|":
+            country = country_capital[:x-1]
+            capital = country_capital[x+2:len(country_capital)-1]
             capitaldash = capital[:]
             break
 
-    for i in range(len(capitaldash)):                                           #SPACES SOLUTION! // len because i want to change every letters
+    for i in range(len(capitaldash)):
 
         if capitaldash[i] != " ":
             capitaldash = capitaldash[:i] + '_' + capitaldash[i+1:]
 
-    play(country,capital,capitaldash)
+    play(country, capital, capitaldash)
     return
 
 
-def play(country,capital,capitaldash):
-    """MAIN PLAY: GUESS CAPITAL, LOOSE LIFES"""
+def play(country, capital, capitaldash):
+    """GUESSING, LOOSE LIFES"""
     global life
-    global start_time
-    life=5
-    badletters=[]
-
+    life = 5
+    badletters = []
 
     while life > 0:
-        os.system('clear')                                                      #clean screen
-        cprint("\n\nSOMETHING FROM " + country + "?",'cyan', attrs=['bold'], file=sys.stderr)
+        os.system('clear')
+        cprint("\n\nSOMETHING FROM " + country + "?", 'cyan', attrs=['bold'], file=sys.stderr)
         print("word: ", capitaldash)
-        print("\nBADLETTERS ", badletters,"\nYOUR LIFES", life)
-        hangman()                                                               #change costumes when life is gone
-        userinput=input("enter letter or word: ")
-        userinput=userinput.upper()                                             #bulletproof letter size
+        print("\nBADLETTERS ", badletters, "\nYOUR LIFES", life)
+        hangman()
+        userinput = input("enter letter or word: ")
+        userinput = userinput.upper()
 
-
-        if len(userinput) > 1:                                                  #more than 1 letter is a word
+        if len(userinput) > 1:
             if userinput == capital:
                 win()
                 break
             else:
                 badletters.append(userinput)
                 life -= 2
-
 
         else:
             if userinput in capital:
@@ -589,7 +604,6 @@ def play(country,capital,capitaldash):
                 if capital == capitaldash:
                     win()
                     break
-
 
             else:
                 badletters.append(userinput)
@@ -601,7 +615,6 @@ def play(country,capital,capitaldash):
 def hangman():
     """VISUALIZE HANGMAN"""
 
-
     if life == 6:
         cprint('''
    ______
@@ -609,8 +622,7 @@ def hangman():
   |
   |
   |
- _|_          ''', 'blue',attrs=['bold'], file=sys.stderr)
-
+ _|_          ''', 'blue', attrs=['bold'], file=sys.stderr)
 
     elif life == 5:
         cprint('''
@@ -619,8 +631,7 @@ def hangman():
   |      O
   |
   |
- _|_          ''', 'blue',attrs=['bold'], file=sys.stderr)
-
+ _|_          ''', 'blue', attrs=['bold'], file=sys.stderr)
 
     elif life == 4:
         cprint('''
@@ -629,8 +640,7 @@ def hangman():
   |      O
   |      |
   |
- _|_          ''', 'blue',attrs=['bold'], file=sys.stderr)
-
+ _|_          ''', 'blue', attrs=['bold'], file=sys.stderr)
 
     elif life == 3:
         cprint('''
@@ -639,8 +649,7 @@ def hangman():
   |      O
   |     /|
   |
- _|_          ''', 'blue',attrs=['bold'], file=sys.stderr)
-
+ _|_          ''', 'blue', attrs=['bold'], file=sys.stderr)
 
     elif life == 2:
         cprint('''
@@ -649,8 +658,7 @@ def hangman():
   |      O
   |     /|\\
   |
- _|_          ''', 'blue',attrs=['bold'], file=sys.stderr)
-
+ _|_          ''', 'blue', attrs=['bold'], file=sys.stderr)
 
     elif life <= 1:
         cprint('''
@@ -659,7 +667,7 @@ def hangman():
   |      O
   |     /|\\
   |     / \\
- _|_          ''', 'blue',attrs=['bold'], file=sys.stderr)
+ _|_          ''', 'blue', attrs=['bold'], file=sys.stderr)
 
 
 def boss_fight():
@@ -677,6 +685,7 @@ def boss_fight():
 
 
 def win2():
+    """VICTORY SCREEN"""
     os.system("clear")
     cprint('''
 
@@ -698,6 +707,7 @@ def win2():
 
 
 def number_generator():
+    """NUMBER GENERATOR"""
     numlist = []
     for number in range(0, 10):
         numlist.append(number)
@@ -711,11 +721,12 @@ def number_generator():
 
 
 def guess(the_number):
+    """GUESS THE NUMBER MINI GAME"""
     boss()
     cprint("\nGUESS THE NUMBER (2 digit) OR DIE!", "red", attrs=['bold'], file=sys.stderr)
-    cprint("COLD        This digit is not correct.","blue")
-    cprint("WARM        This digit is correct in wrong position.","yellow")
-    cprint("HOT         This digit is correct in the right position.","red")
+    cprint("COLD        This digit is not correct.", "blue")
+    cprint("WARM        This digit is correct in wrong position.", "yellow")
+    cprint("HOT         This digit is correct in the right position.", "red")
 
     # print(the_number)
     try_number = 1
@@ -754,6 +765,7 @@ def guess(the_number):
 
 
 def boss():
+    """BOSS FIGHT: GUESSING GAME"""
     cprint('''
            ___
          .';:;'.
@@ -776,11 +788,9 @@ def main():
     game_rules()
     time.sleep(2)
 
-
     while True:
         cprint("\nMENU:\n1: PLAY \n2: CREDITS \n3: EXIT\n\n", 'red', attrs=['bold'], file=sys.stderr)
         pick = input("PICK THE NUMBER: ")
-
 
         if pick == "1":                                                         # main menu
             level = items(level_board(gameboard(), 10))
@@ -791,10 +801,9 @@ def main():
         elif pick == "2":
             os.system('clear')
             credits()
-        else:                                                                   #errors, invalid command from user
+        else:
+            print('INVALID COMMAND')  # errors, invalid command from user
             os.system('clear')
-
-
 
 if __name__ == "__main__":
     game_intro()
