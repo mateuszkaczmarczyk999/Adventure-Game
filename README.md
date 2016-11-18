@@ -1,10 +1,16 @@
-"""ZOMBIE CHICKEN FARM"""
+"""ZOMBIE CHICKEN FARM""" 
+designed & programmed by Mateusz Kaczmarczyk, Michał Kaczkowski & Ika Graboń
 
 
 ABOUT:
 Old macdonald had a farm.... but after a nuclear holocaust chickens on your farm turned into bloodthirsty zombies...
 now you need to heal your chickens! remember! everywhere rises radioactive mist. 
 if you dont want to die too quickly hide in abandoned barns & clear infected blood.
+
+MAIN:
+PRESS 1 : PLAY
+PRESS 2: CREDITS
+PRESS 3: EXIT
 
 CONTROL:
 A - move 
@@ -15,14 +21,21 @@ W - move up
 INSTRUCTIONS:
 
 zombie 💀  you can cure the zombie using the cure
+
 cure ● cure chickens. you can have only 1 in inventory
-supercure ♥ russian roulette. you can gain 15 cures or... die!
+
+supercure ♥ russian roulette. you can gain 15 cures or... die! 
 golden egg Q trophy
+
 magic weed ♣ improves mood before the big fight: mini games
-pitchfork Ψ be careful! pitchforks can kill you
+
+pitchfork Ψ be careful! pitchforks can kill you 
+
 roof ▤ obstacle
+
 door ▦ door to barn: mini game
-fence▐ obstacle
+
+fence▐ obstacle 
 
 
 IMPORTANT DEFINITIONS:
