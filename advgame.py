@@ -470,6 +470,7 @@ def rock_game():
                 player = True
             else:
                 print('YOU WIN!✌ ' + player + ' COVERS ' + computer_choice)
+                time.sleep(2)
                 win()
         elif player == 'ROCK':
             print('☁')
@@ -481,6 +482,7 @@ def rock_game():
                 player = True
             else:
                 print('YOU WIN!✌ ' + player + ' SMASHES ' + computer_choice)
+                time.sleep(2)
                 win()
         elif player == 'SCISSORS':
             print('✄')
@@ -492,6 +494,7 @@ def rock_game():
                 player = True
             else:
                 print('YOU WIN!✌ ' + player + ' CUT ' + computer_choice)
+                time.sleep(2)
                 win()
         else:
             print('TRY AGAIN')
