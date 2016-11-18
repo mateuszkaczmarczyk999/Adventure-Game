@@ -574,7 +574,7 @@ def game_start():
 
 
 def play(country, capital, capitaldash):
-    """GUESSING, LOOSE LIFES"""
+    """HANGMAN GAME, GUESSING, LOOSE LIFES"""
     global life
     life = 5
     badletters = []
@@ -671,6 +671,7 @@ def hangman():
 
 
 def boss_fight():
+    """BOSS FIGHT GUESSING GAME"""
     f = open("boss.txt", 'r')
     colorlist = ("red", "white", "red")
     effect_list = [line[:-1] for line in f]
@@ -765,7 +766,7 @@ def guess(the_number):
 
 
 def boss():
-    """BOSS FIGHT: GUESSING GAME"""
+    """BOSS"""
     cprint('''
            ___
          .';:;'.
@@ -783,7 +784,7 @@ def boss():
 
 
 def main():
-    """MAIN MENU"""
+    """MAIN MENU: PLAY OR EXIT OR CREDITS"""
     os.system('clear')
     game_rules()
     time.sleep(2)
